@@ -1,10 +1,8 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef } from 'react'
 import * as THREE from 'three'
 
 function MoonPhases() {
   const mountRef = useRef(null)
-  const [hoveredMoon, setHoveredMoon] = useState(null)
-  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 })
 
   useEffect(() => {
     // Scene setup
@@ -80,7 +78,6 @@ function MoonPhases() {
     // Create moon phases in a circle
     const circleRadius = 8
     const moonGroup = new THREE.Group()
-    const moonMeshes = []
 
     moonPhases.forEach((moonPhase, index) => {
       const angle = (index / moonPhases.length) * Math.PI * 2 - Math.PI / 2 // Start from top
@@ -90,13 +87,6 @@ function MoonPhases() {
       const moon = createMoonPhase(moonPhase.phase)
       moon.position.set(x, y, 0)
       moonGroup.add(moon)
-
-      // Store reference to the moon mesh for raycasting
-      moonMeshes.push({
-        mesh: moon.children[0], // The main moon sphere
-        name: moonPhase.name,
-        index: index
-      })
 
       // Add text label (simplified as a small cube for now)
       const labelGeometry = new THREE.BoxGeometry(0.1, 0.1, 0.1)
@@ -114,10 +104,6 @@ function MoonPhases() {
     const center = new THREE.Mesh(centerGeometry, centerMaterial)
     scene.add(center)
 
-    // Raycaster for mouse interaction
-    const raycaster = new THREE.Raycaster()
-    const mouse = new THREE.Vector2()
-
     // Orbit controls
     let isMouseDown = false
     let mouseX = 0
@@ -133,26 +119,6 @@ function MoonPhases() {
     }
 
     const handleMouseMove = (event) => {
-      // Update mouse position for raycasting
-      mouse.x = (event.clientX / window.innerWidth) * 2 - 1
-      mouse.y = -(event.clientY / window.innerHeight) * 2 + 1
-
-      // Raycast to check for moon intersections
-      raycaster.setFromCamera(mouse, camera)
-      const intersects = raycaster.intersectObjects(moonMeshes.map(m => m.mesh))
-
-      if (intersects.length > 0) {
-        const intersectedMesh = intersects[0].object
-        const moonData = moonMeshes.find(m => m.mesh === intersectedMesh)
-        if (moonData) {
-          setHoveredMoon(moonData.name)
-          setMousePosition({ x: event.clientX, y: event.clientY })
-        }
-      } else {
-        setHoveredMoon(null)
-      }
-
-      // Handle camera rotation
       if (!isMouseDown) return
 
       const deltaX = event.clientX - mouseX
@@ -214,37 +180,15 @@ function MoonPhases() {
   }, [])
 
   return (
-    <div style={{ position: 'relative' }}>
-      <div
-        ref={mountRef}
-        style={{
-          width: '100vw',
-          height: '100vh',
-          background: '#000011',
-          cursor: 'grab'
-        }}
-      />
-      {hoveredMoon && (
-        <div
-          style={{
-            position: 'absolute',
-            left: mousePosition.x + 10,
-            top: mousePosition.y - 30,
-            background: 'rgba(0, 0, 0, 0.8)',
-            color: 'white',
-            padding: '8px 12px',
-            borderRadius: '4px',
-            fontSize: '14px',
-            fontFamily: 'Arial, sans-serif',
-            pointerEvents: 'none',
-            zIndex: 1000,
-            whiteSpace: 'nowrap'
-          }}
-        >
-          {hoveredMoon}
-        </div>
-      )}
-    </div>
+    <div
+      ref={mountRef}
+      style={{
+        width: '100vw',
+        height: '100vh',
+        background: '#000011',
+        cursor: 'grab'
+      }}
+    />
   )
 }
 
