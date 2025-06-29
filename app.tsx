@@ -61,12 +61,8 @@ class ThreeApp {
       { name: 'Waxing Gibbous', phase: 3 },
       { name: 'Full Moon', phase: 4 },
       { name: 'Waning Gibbous', phase: 5 },
-      { name: 'Last Quarter', phase: 6 },
-      { name: 'Waning Crescent', phase: 7 },
-      { name: 'New Moon', phase: 8 },
-      { name: 'Waxing Crescent', phase: 9 },
-      { name: 'First Quarter', phase: 10 },
-      { name: 'Waxing Gibbous', phase: 11 }
+      { name: 'Third Quarter', phase: 6 },
+      { name: 'Waning Crescent', phase: 7 }
     ];
 
     // Create moon phases in a circle
@@ -74,7 +70,7 @@ class ThreeApp {
     moonPhases.forEach((phaseData, index) => {
       // Calculate position in circle
       // Start from top (New Moon) and go clockwise
-      const angle = (index / 12) * Math.PI * 2 - Math.PI / 2;
+      const angle = (index / 8) * Math.PI * 2 - Math.PI / 2;
       const x = Math.cos(angle) * circleRadius;
       const y = Math.sin(angle) * circleRadius;
 
